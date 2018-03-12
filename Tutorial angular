@@ -253,3 +253,141 @@ Devemos criar uma nova animação, para isso adicionamos uma nova query
 
 
 quando o elemento sair da DOM, o delay de animação entre ele e o seu sucessor é de 300ms ( query(':leave', stagger('300ms', ...)) )
+
+------------------- AULA 06 -------------------
+
+Para fazer o roteamento funcionar, devemos abrir o arquivo app-routing.modules.ts e alterar o seu conteudo importando os componentes necessarios
+
+import { HomeComponent } from './home/home.component';
+import { AboutComponent } from './about/about.component';
+
+const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent
+  },
+  {
+    path: 'about',
+    component: AboutComponent
+  }
+];
+
+aqui, o path é o diretorio que contem o html a ser mostrado e o componente é o nome do componente (anteriormente, fizemos um link para exibir home dentro do path raiz por isso o path: '')
+
+devemos retirar o 'link' (seletor de elemento) do arquivo deletando a linha
+
+<app-home></app-home>
+
+apartir de agora, o roteamento ja deve estar funcionando corretamente
+
+Apenas para fins de explicação, vamos adicionar um parametro de rota, por exemplo um id a rota about/:id
+
+{
+    path: 'about/:id',
+    component: AboutComponent
+}
+
+adicionamos um id de forma hardcoded noa arquivo app.component.html
+
+<li><a routerLink="about/48">About</a></li>
+
+para ter acesso esse id no componente devemos adicionar o ActivatedRoute do angular
+
+import { ActivatedRoute } from '@angular/router';
+
+Apos isso devemos criar uma instacioa do ActivatedRoute atravez de injeção de dependencia no construtor, recuperar o response e fazer um console.log
+
+constructor(private route: ActivatedRoute) {
+   this.route.params.subscribe(res => console.log(res.id))
+}
+
+Caso quisermos alterar a rota de saida do nosso componente, devemos utilizar Router, adicione esta nova dependencia ao arquivo e injete no construtor
+
+import { Router } from '@angular/router';
+
+constructor(..., private router: Router) { }
+
+Apos isso crie um metodo para fazer a navegação para o path ''
+
+sendMeHome() {
+    this.router.navigate(['']);
+}
+
+Altere o html do about para abrigar um botão que ativa a função que acabamos de criar
+
+<p>
+  This is what I'm all about. <a href="" (click)="sendMeHome()"><strong>Take me back</strong></a>.
+</p>
+
+------------------- AULA 07 -------------------
+
+Podemos utilizar serviços para compartilhar dados entre varios componentes, ou para efetuiar chamadas html de recuperação de dados.
+
+para criar nosso proprio serviço, devemos utilizar o comando a seguir
+
+ng generate service data
+
+o serviço gerado pode ser encontrado na pasta src data.service.ts, a sua estrutura é bem parecida com a de um componente, a diferença é que este é um Injectable.
+
+Iremos utilizar rxjs para compartilhar os dados
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+private goals = new BehaviorSubject<any>(['The initial goal', 'Another silly life goal']);
+goal = this.goals.asObservable();
+
+
+Então criamos um metodo que é acessivel pelos outros metodos
+
+changeGoal(goal) {
+    this.goals.next(goal)
+}
+
+E por fim, importamos o nosso serviço no app.module e adicionar aos poviders
+
+import { DataService } from './data.service'; 
+
+providers: [DataService],
+
+Para utiliza-lo, devemos importar no component desejado, no nosso caso home.component.ts e no construtor
+
+import { DataService } from '../data.service';
+
+constructor(private _data: DataService) { }
+
+E por fim, atribuir o valor de _data recuperado com o serviço para goals
+
+goals = [];
+
+ngOnInit() {
+    ...;
+    this._data.goal.subscribe(res => this.goals = res);
+    this._data.changeGoal(this.goals); 
+}
+
+addItem() {
+    ...,
+    this._data.changeGoal(this.goals); 
+}
+
+removeItem(i) {
+    ...,
+    this._data.changeGoal(this.goals); 
+}
+
+Podemos fazer o mesmo processo em about para testar o serviço
+
+------------------- AULA 08 -------------------
+
+Uma forma simples de fazer deply no nosso projeto é atraves do github, para isso instalamos a dependencia abaixo:
+
+npm i -g angular-cli-ghpages
+
+Devemos executar um comando para fazer o build de produção do nosso projeto para o gitpages
+
+ng build --prod --base-href="https://elyervesson.github.io/angular5-basico/"
+
+apos efetuar o commit, devemos utilizar o comando abaixo
+
+angular-cli-ghpages
+
