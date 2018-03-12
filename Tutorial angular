@@ -1,0 +1,255 @@
+Tutorial angular (https://coursetro.com/courses/19/Learn-Angular-5-from-Scratch---Angular-5-Tutorial/)
+
+------------------- AULA 01 -------------------
+
+Iniciar um novo projeto (ng5 por exemplo)
+
+utilize as flags --style para adicionar o css e --routing para integrar roting de forma default
+
+ng new ng5 --style=scss --routing
+
+Construir o projeto
+
+ng serve
+
+Acessar o navegador para verificar que o projeto esta rodando
+
+http://localhost:4200/
+
+------------------- AULA 02 -------------------
+
+Componentes: blocos basicos para construção das aplicações
+
+Quando estamos desenvolvendo uma aplicação, geralmente estaremos dentro do diretorio /src/app, dentro desse diretorio temos: 
+
+Component.ts que contem a logica do componente, é possivel encontrar os importes do angular, abaixo existe o decorator do componente, nessa area é possivel especificar a estrutura do componente e por fim, existe a area do export class, nessa area esta toda a parte de logica da aplicação
+
+Criar um novo componente (home e about)
+
+ng generate component home (forma comum)
+ng g c about (forma curta)
+
+Aninhar o componente home no componente app
+
+Devemos abrir o nosso app.html e remover todo o codigo (exceto o router-outlet), em seguida devemos adicionar uma lista desordenada <ul> e algum codigo dentro
+
+routerLink é uma diretiva que permite alterar o componente, para isso devemos apenas dizer o nome do componente que queremos mudar
+
+"<a routerLink="about">About</a>"
+
+------------------- AULA 03 -------------------
+
+Template: definimos os templates dentro do decorator do componente, caso estes sejam de um tamanho consideravel, utilizamos templateUrl: './about.component.html' por exemplo, porem caso seja um template minimo, podemos adiciona-lo diretamente no decorator, para isso utilizamos template:'<p> Este é um exemplo de pagagrafo </p>'
+
+Style: definimos a localização do arquivo de estilos dentro do componente, tradicionalmente styleUrls: ['./about.component.scss', caso estes sejam poucos, podemos utilizar styles: ['p { font-weight: bold}']
+
+Devemos adicionar codigo html ao arquivo home.component.html
+
+----------------------------------------------------------------------------
+<div class="container color-dark">
+  <div class="col">
+    <p>Add a bucket list item</p>
+  </div>
+  <div class="col">
+      <p>Your bucket list</p>
+    </div>
+</div>
+<div class="container color-light">
+    <div class="col">
+      <p class="sm">Use this form below to add a new bucket list goal. What do you want to do with your live?</p>
+      
+      <form>
+        <input type="text" class="txt" name="item" placeholder="Life goal..">
+        <input type="submit" class="btn" value="Add item">
+      </form>
+    </div>
+    <div class="col">
+        <p class="life-container">
+          I want to climb a montaion
+        </p>
+      </div>
+  </div>
+----------------------------------------------------------------------------
+
+Devemos tambem adicionar css ao arquivo style.scss na raiz
+
+----------------------------------------------------------------------------
+/* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css?family=aleway:300,700');
+
+body {
+    background: #2E9CE6;
+    padding: 3em;
+    font-family: 'Raleway', 'Arial';
+    color: #fff;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0 0 2em 0;
+    padding: 0;
+}
+
+ul li {
+    display: inline;
+    margin-right: 30px;
+}
+
+ul li a {
+    font-size: 1.5em;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+}
+----------------------------------------------------------------------------
+
+Devemos tambem adicionar css ao arquivo home.component.scss
+
+----------------------------------------------------------------------------
+.container {
+    display: grid;
+    grid-template-columns: 50% auto;
+}
+.col {
+    padding: .4em 1.3em;
+}
+.color-dark {
+    background: #2885C4;
+}
+.color-light {
+    background: #57B3F1;
+}
+
+input.txt {
+    border: 0;
+    padding: 1em;
+    width: 80%;
+    margin-bottom: 2em;
+}
+input.btn {
+    border: 0;
+    display:block;
+    padding:1em 3em;
+    background:#A5F883;
+    color:#003A61;
+    margin-bottom:1em;
+    cursor:pointer;
+}
+.life-container {
+    background:#3FA0E1;
+    padding:.5em;
+    font-weight:bold;
+    cursor:pointer;
+}
+----------------------------------------------------------------------------
+
+------------------- AULA 04 -------------------
+
+Interpolação: Quando queremos exibir os dados presentes no componente, utilizamos interpolação para exibir esses valores nos templates.
+
+Adicionar uma propriedade chamada itemCount na classe de export do componente
+
+itemCount: number = 4;
+
+No html, utilizamos  {{ itemCount }} para exibir o novo valor
+
+Proprety binding: Para adicionar valor a uma propriedade podemos utilizar '[' e ']' na propriedade e em seguidar o nome da variavel do controller por exemplo, então esse valor sera passado para a propriedade.
+
+Adicionar uma nova propriedade chamada btnText
+
+btnText: string = 'Add an item'
+
+no html, utilizamos '[' e ']' para executar o binding adicionando '[' e ']' na propriedade valor
+
+[value]="btnText"
+
+Tambem é possivel fazer o two way data binding, esse tipo de binding é muito usado no caso de inputs, onde é possivel alterar a variavel em ambos os lados, para isso devemos adicionar um import no app.module.ts
+
+import { FormsModule } from '@angular/forms';
+
+imports: [
+   ...,
+   FormsModule
+]
+
+Apos isso, para comprovar o funcionamento, podemos adicionar uma nova propriedade em home.component.ts
+
+goalText: string = "My first life goal";
+
+Então no html devemos adicionar o two way data binding da seguinte forma:
+
+<input type="text" class="txt" name="item" placeholder="Life goal.." [(ngModel)]="goalText">
+
+<br><span>{{ goalText }}</span>
+
+assim, sempre que o campo de texto for alterado, o span tambem sera
+
+Event bind é utilizado para capturar os eventos iniciados pelo usuario e então iniciar alguma logica no componenete
+
+Por exemplo templo temos o click event deve mos colocar o evento entre parenteses -> (click)="metodo()"
+
+ngOnInit() é um gancho do ciclo de vida, este é iniciado quando o componente é carregado. sabendo disso, devemos alterar aqui para adicionar a logica do event click
+
+itemCount: number;
+goals = [];
+
+ngOnInit() {
+   this.itemCount = this.goals.length;
+}
+
+addItem() {
+   this.goals.push(this.goalText);
+   this.goalText = '';
+   this.itemCount = this.goals.lenght;
+}
+
+Depois disso ja deve ser possivel visualizar o contador de metas sendo alterado, porem para que as metas sejam exibidas em lista ainda é preciso alterar o html para isso.
+
+<p class="life-container" *ngFor="let goal of goals">
+   {{ goal }}
+</p>
+
+------------------- AULA 05 -------------------
+
+Na situação atual do aplicativo, não existe nenhuma animação, para alterarmos isso devemos instalar o pacote angular animation
+
+npm install @angular/animations@latest --save
+
+Apos isso, devemos importar aquilo que foi instalado, devemos fazer isso em app.module.ts
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
+imports: [
+   ...,
+   BrowserAnimationsModule
+],
+
+E por fim, devemos adicionar as animações desejadas dentro do componente desejado;
+
+import { trigger, style, transition, animate, keyframes, query, stagger } from '@angular/animations'
+
+essa transição sera ativada de qualquer estado para qualquer estado ( transition('* +> *') )
+
+quando o elemento entra no DOM, a sua opacidade é alterada para 0 ( [query(':enter', style({opacity: 0 }) )
+
+quando um elemento entra no DOM, o delay de animação entre ele e o seu sucessor é de 300ms ( query(':enter', stagger('300ms', ...) )
+
+Devemos adicionar as animações ao html para que estas tenham efeito
+
+<div class="container color-light" [@goals]="goals.length">
+
+Agora, podemos implementar a remoção dos goals, para isso utilizaremos event binding
+
+<p class="life-container" *ngFor="let goal of goals; let i = index" (click)="removeItem(i)">
+
+removeItem(i) {
+    this.goals.splice(i, 1);
+}
+
+Devemos criar uma nova animação, para isso adicionamos uma nova query
+
+
+quando o elemento sair da DOM, o delay de animação entre ele e o seu sucessor é de 300ms ( query(':leave', stagger('300ms', ...)) )
